@@ -199,8 +199,7 @@ export const Contact = () => {
     )}
   </tbody>
 </Table>
-
-              <div className="text-center mt-4">
+<div className="text-center mt-4">
                 <Button variant="secondary" onClick={() => setShowVisitorList(false)}>
                   Back to Form
                 </Button>
