@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 export const Contact = () => {
   const responsive = {
@@ -43,35 +44,52 @@ export const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setButtonText("Sending...");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to send this message?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, send it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Jika dikonfirmasi, lanjutkan pengiriman
+        setButtonText("Sending...");
 
-    const currentDate = new Date().toLocaleString();
+        const currentDate = new Date().toLocaleString();
 
-    if (editingIndex !== null) {
-      // Update an existing entry
-      const updatedSubmissions = submissions.map((submission, index) =>
-        index === editingIndex
-          ? { ...submission, ...formDetails }
-          : submission
-      );
-      setSubmissions(updatedSubmissions);
-      setEditingIndex(null);
-      setStatus({ success: true, message: "Message updated successfully" });
-    } else {
-      // Add new entry
-      const newSubmission = {
-        id: submissions.length + 1,
-        name: formDetails.name,
-        email: formDetails.email,
-        message: formDetails.message,
-        date: currentDate,
-      };
-      setSubmissions([...submissions, newSubmission]);
-      setStatus({ success: true, message: "Message saved successfully" });
-    }
+        if (editingIndex !== null) {
+          // Update pesan yang sudah ada
+          const updatedSubmissions = submissions.map((submission, index) =>
+            index === editingIndex
+              ? { ...submission, ...formDetails }
+              : submission
+          );
+          setSubmissions(updatedSubmissions);
+          setEditingIndex(null);
+          setStatus({ success: true, message: "Message updated successfully" });
+        } else {
+          // Tambahkan pesan baru
+          const newSubmission = {
+            id: submissions.length + 1,
+            name: formDetails.name,
+            email: formDetails.email,
+            message: formDetails.message,
+            date: currentDate,
+          };
+          setSubmissions([...submissions, newSubmission]);
+          setStatus({ success: true, message: "Message saved successfully" });
+        }
 
-    setFormDetails(formInitialDetails);
-    setButtonText("Send");
+        // Reset form
+        setFormDetails(formInitialDetails);
+        setButtonText("Send");
+
+        // Tampilkan notifikasi sukses
+        Swal.fire("Sent!", "Your message has been sent.", "success");
+      }
+    });
   };
 
   const handleEdit = (index) => {
@@ -199,7 +217,8 @@ export const Contact = () => {
     )}
   </tbody>
 </Table>
-<div className="text-center mt-4">
+
+              <div className="text-center mt-4">
                 <Button variant="secondary" onClick={() => setShowVisitorList(false)}>
                   Back to Form
                 </Button>
